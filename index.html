@@ -1,0 +1,354 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Nolan Dey">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link href="img/favicon.ico" rel="icon" type="image/x-icon">
+  <title>Neuron-based explanations of neural networks sacrifice completeness and interpretability</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description"
+              content="Neuron-based explanations of neural networks sacrifice completeness and interpretability">
+  <link href="img/favicon.ico" rel="icon" type="image/x-icon"/>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+</head>
+
+<body class="nd-docs">
+<div class="nd-pageheader">
+ <div class="container">
+ <p class="lead">
+ <nobr>Neuron-based explanations of</nobr>
+ <nobr>neural networks sacrifice</nobr>
+ <nobr>completeness and</nobr>
+ <nobr>interpretability</nobr>
+<address>
+  <nobr><a target="_blank" href="https://ndey96.github.io"
+  >Nolan Dey</a><sup>1,2,3</sup>,</nobr>
+  <nobr><a target="_blank" href="https://scholar.google.ca/citations?user=OqtTvI0AAAAJ&hl=en"
+  >Eric Taylor</a><sup>3,4</sup>,</nobr>
+  <nobr><a target="_blank" href="https://uwaterloo.ca/systems-design-engineering/profile/a28wong"
+  >Alexander Wong</a><sup>2,5</sup>,</nobr>
+  <nobr><a target="_blank" href="https://uwaterloo.ca/systems-design-engineering/profile/bptripp"
+  >Bryan Tripp</a><sup>4</sup>,</nobr>
+  <nobr><a target="_blank" href="https://www.gwtaylor.ca"
+  >Graham Taylor</a><sup>3,6</sup>
+ <br>
+  <nobr><sup>1</sup><a target="_blank" href="https://cerebras.ai">Cerebras Systems</a>,</nobr>
+  <nobr><sup>2</sup><a target="_blank" href="https://uwaterloo.ca">University of Waterloo</a></nobr>,
+  <nobr><sup>3</sup><a target="_blank" href="https://vectorinstitute.ai">Vector Institute</a></nobr>,
+  <nobr><sup>4</sup><a target="_blank" href="https://rbcborealis.com">Borealis AI</a></nobr>,
+  <nobr><sup>5</sup><a target="_blank" href="https://apple.com">Apple</a></nobr>,
+  <nobr><sup>6</sup><a target="_blank" href="https://uoguelph.ca">University of Guelph</a></nobr>,
+</address>
+ </p>
+ </div>
+</div><!-- end nd-pageheader -->
+<div class="container">
+
+<div class="row">
+  <div class="col text-center">
+    <p>
+      [<a href="TODO" target="_blank">TMLR Paper</a>]
+      [<a href="TODO" target="_blank">arXiv Paper</a>]
+      [<a href="https://openreview.net/forum?id=UWNa9Pv6qA" target="_blank">OpenReview</a>]
+      [<a href="https://github.com/ndey96/neuron-explanations-sacrifice" target="_blank">Code</a>]
+    </p>
+  </div>
+</div>
+
+<div class="row">
+<div class="col">
+  <p><b>TL;DR:</b> The most important principal components provide more complete and interpretable explanations than the most important neurons.</p>
+  <p>
+    High quality explanations of neural networks (NNs) should exhibit two key properties. <em>Completeness</em> ensures that they accurately reflect a network's function and <em>interpretability</em> makes them understandable to humans. The most complete explanation would be to simply display the equation for a layer's forward pass. However, this explanation has poor interpretability. At the opposite extreme, many popular DNN explanation methods make choices that increase interpretability at the expense of completeness. Many popular methods provide explanations of individual neurons within a network. We provide evidence that for AlexNet, neuron-based explanation methods sacrifice both completeness and interpretability compared to activation principal components (PCs). Neurons are a poor basis for AlexNet embeddings because they don't account for the distributed nature of these representations.
+  </p>
+
+  <p>
+    The problem of explaining a NN can be decomposed into understanding the nonlinear transformation applied by each layer in terms of the NN's input space. To facilitate this for a particular layer, we sample activations, fit a basis for activation space, and visualize points along each basis vector.
+  </p>
+  <div>
+    <img src="img/method.png" width="100%" height="auto">
+  </div>
+
+  <p></p>
+
+  <p>Using the interface below, you can interpret visualizations of the following:</p>
+  <ul>
+    <li>PCs and neurons for every layer of pre-trained AlexNet.</li>
+    <li>PCs for every residual block of pre-trained ResNet-18</li>
+    <li>PCs for every residual block of pre-trained ResNet-50 \citep{resnet}.</li>
+    <li>PCs for 10 layers of pre-trained ViT-B/16</li>
+  </ul>
+
+  <div style="margin-bottom: 16px;">
+      <span>
+          <span>Model: </span>
+          <select id="model" onchange="model_changed();">
+              <option value="alexnet">AlexNet</option>
+              <option value="resnet18">ResNet18</option>
+              <option value="resnet50">ResNet50</option>
+              <option value="vit_b_16">ViT-B/16</option>
+          </select>
+      </span>
+
+      <span>
+          <span>Basis: </span>
+          <select id="basis" onchange="layer_changed();">
+              <option value="pca">PCA</option>
+              <option value="neuron">Neuron</option>
+          </select>
+      </span>
+
+      <span>
+          <span>Layer: </span>
+          <select id="layer" onchange="layer_changed();">
+              <option value="features0">conv1</option>
+              <option value="features3">conv2</option>
+              <option value="features6">conv3</option>
+              <option value="features8">conv4</option>
+              <option value="features10">conv5</option>
+              <option value="classifier1">fc1</option>
+              <option value="classifier4">fc2</option>
+              <option value="classifier6">fc3</option>
+          </select>    
+      </span>
+
+      <span>
+          <span>Component: </span>
+          <input type="number" id="number" min="1" onchange="component_changed();" style="width:48px;">
+          <span id='max_components'> / 64 available in descending variance order</span>
+      </span>
+      <div style="border: 1px black solid;margin-top: 10px;">
+          <img id='vis' width="100%">
+      </div>
+      <script>
+          var alexnet_layers = [];
+          alexnet_layers.push("<option value='features0'>conv1</option>");
+          alexnet_layers.push("<option value='features3'>conv2</option>");
+          alexnet_layers.push("<option value='features6'>conv3</option>");
+          alexnet_layers.push("<option value='features8'>conv4</option>");
+          alexnet_layers.push("<option value='features10'>conv5</option>");
+          alexnet_layers.push("<option value='classifier1'>fc1</option>");
+          alexnet_layers.push("<option value='classifier4'>fc2</option>");
+          alexnet_layers.push("<option value='classifier6'>fc3</option>");
+          alexnet_layers_html = alexnet_layers.join()
+
+          var alexnet_dict = {
+              'features0': 64,
+              'features3': 192,
+              'features6': 384,
+              'features8': 256,
+              'features10': 256,
+              'classifier1': 64,
+              'classifier4': 64,
+              'classifier6': 64,
+          }
+
+          var resnet18_layers = [];
+          resnet18_layers.push("<option value='conv1'>conv1</option>");
+          resnet18_layers.push("<option value='layer1@0@conv2'>layer1@0@conv2</option>");
+          resnet18_layers.push("<option value='layer1@1@conv2'>layer1@1@conv2</option>");
+          resnet18_layers.push("<option value='layer2@0@conv2'>layer2@0@conv2</option>");
+          resnet18_layers.push("<option value='layer2@1@conv2'>layer2@1@conv2</option>");
+          resnet18_layers.push("<option value='layer3@0@conv2'>layer3@0@conv2</option>");
+          resnet18_layers.push("<option value='layer3@1@conv2'>layer3@1@conv2</option>");
+          resnet18_layers.push("<option value='layer4@0@conv2'>layer4@0@conv2</option>");
+          resnet18_layers.push("<option value='layer4@1@conv2'>layer4@1@conv2</option>");
+          resnet18_layers.push("<option value='fc'>fc</option>");
+          resnet18_layers_html = resnet18_layers.join()
+
+          var resnet50_layers = [];
+          resnet50_layers.push("<option value='conv1'>conv1</option>");
+          resnet50_layers.push("<option value='layer1@0@conv3'>layer1@0@conv3</option>");
+          resnet50_layers.push("<option value='layer1@1@conv3'>layer1@1@conv3</option>");
+          resnet50_layers.push("<option value='layer1@2@conv3'>layer1@2@conv3</option>");
+          resnet50_layers.push("<option value='layer2@0@conv3'>layer2@0@conv3</option>");
+          resnet50_layers.push("<option value='layer2@1@conv3'>layer2@1@conv3</option>");
+          resnet50_layers.push("<option value='layer2@2@conv3'>layer2@2@conv3</option>");
+          resnet50_layers.push("<option value='layer2@3@conv3'>layer2@3@conv3</option>");
+          resnet50_layers.push("<option value='layer3@0@conv3'>layer3@0@conv3</option>");
+          resnet50_layers.push("<option value='layer3@1@conv3'>layer3@1@conv3</option>");
+          resnet50_layers.push("<option value='layer3@2@conv3'>layer3@2@conv3</option>");
+          resnet50_layers.push("<option value='layer3@3@conv3'>layer3@3@conv3</option>");
+          resnet50_layers.push("<option value='layer3@4@conv3'>layer3@4@conv3</option>");
+          resnet50_layers.push("<option value='layer3@5@conv3'>layer3@5@conv3</option>");
+          resnet50_layers.push("<option value='layer4@0@conv3'>layer4@0@conv3</option>");
+          resnet50_layers.push("<option value='layer4@1@conv3'>layer4@1@conv3</option>");
+          resnet50_layers.push("<option value='layer4@2@conv3'>layer4@2@conv3</option>");
+          resnet50_layers.push("<option value='fc'>fc</option>");
+          resnet50_layers_html = resnet50_layers.join()
+
+
+          var vitb16_layers = [];
+          vitb16_layers.push("<option value='conv_proj'>conv_proj</option>");
+          vitb16_layers.push("<option value='encoder@layers@encoder_layer_0@self_attention'>layer_0@self_attention</option>");
+          vitb16_layers.push("<option value='encoder@layers@encoder_layer_0@mlp@3'>layer_0@mlp</option>");
+          vitb16_layers.push("<option value='encoder@layers@encoder_layer_3@self_attention'>layer_3@self_attention</option>");
+          vitb16_layers.push("<option value='encoder@layers@encoder_layer_3@mlp@3'>layer_3@mlp</option>");
+          vitb16_layers.push("<option value='encoder@layers@encoder_layer_7@self_attention'>layer_7@self_attention</option>");
+          vitb16_layers.push("<option value='encoder@layers@encoder_layer_7@mlp@3'>layer_7@mlp</option>");
+          vitb16_layers.push("<option value='encoder@layers@encoder_layer_11@self_attention'>layer_11@self_attention</option>");
+          vitb16_layers.push("<option value='encoder@layers@encoder_layer_11@mlp@3'>layer_11@mlp</option>");
+          vitb16_layers.push("<option value='heads@head'>heads@head</option>");
+          vitb16_layers_html = vitb16_layers.join()
+
+
+          alexnet_bases_html = '<option value="pca">PCA</option><option value="neuron">Neuron</option>'
+          resnet50_bases_html = '<option value="pca">PCA</option>'
+          resnet18_bases_html = '<option value="pca">PCA</option><option value="neuron">Neuron</option>'
+          vitb16_bases_html = '<option value="pca">PCA</option><option value="neuron">Neuron</option>'
+
+          var prev_component_idx = 1;
+          document.getElementById('number').value = prev_component_idx;
+          function component_changed() {
+              var model_name = document.getElementById("model").value;
+              var component_selector = document.getElementById("number");
+              var component_idx = component_selector.value;
+              var layer_name = document.getElementById("layer").value;
+              var n_components = -1
+              if (model_name == 'resnet50' || model_name == 'resnet18' || model_name == 'vit_b_16') {
+                  n_components = 16
+              } else if (model_name == 'alexnet') {
+                  n_components = alexnet_dict[layer_name]
+              }
+              console.log(layer_name)
+              console.log(n_components)
+              if (component_idx > n_components) {
+                  component_selector.value = prev_component_idx;
+              } else {
+                  update_img();
+                  prev_component_idx = component_selector.value
+              }
+          }
+
+          function layer_changed() {
+              var component_selector = document.getElementById("number");
+              component_selector.value = 1;
+              
+              var model_name = document.getElementById("model").value;
+              var layer_name = document.getElementById("layer").value;
+              var n_components = -1
+              if (model_name == 'resnet50' || model_name == 'resnet18' || model_name == 'vit_b_16') {
+                  n_components = 16
+              } else if (model_name == 'alexnet') {
+                  n_components = alexnet_dict[layer_name]
+              }
+              var max_component_span = document.getElementById("max_components");
+              max_component_span.textContent = " / " + n_components + " available in descending variance order"
+              update_img();
+          }
+
+          function model_changed() {
+              var model_name = document.getElementById("model").value;
+              if (model_name == 'resnet50') {
+                  document.getElementById("layer").innerHTML = resnet50_layers_html;
+                  document.getElementById("basis").innerHTML = resnet50_bases_html;
+              } else if (model_name == 'alexnet') {
+                  document.getElementById("layer").innerHTML = alexnet_layers_html;
+                  document.getElementById("basis").innerHTML = alexnet_bases_html;
+              } else if (model_name == 'resnet18') {
+                  document.getElementById("layer").innerHTML = resnet18_layers_html;
+                  document.getElementById("basis").innerHTML = resnet18_bases_html;
+              } else if (model_name == 'vit_b_16') {
+                  document.getElementById("layer").innerHTML = vitb16_layers_html;
+                  document.getElementById("basis").innerHTML = vitb16_bases_html;
+              }
+              layer_changed();
+          }
+
+          function update_img() {
+              var model_name = document.getElementById("model").value;
+              var basis_name = document.getElementById("basis").value;
+              var layer_name = document.getElementById("layer").value;
+              var true_component_idx = String(document.getElementById("number").value) - 1;
+              var img_path = 'img/' + model_name + '/' + basis_name + '/' + layer_name + '/' + true_component_idx + '.jpg';
+              document.getElementById('vis').src = img_path;
+          }
+          update_img();
+      </script>
+  </div>
+</div>
+</div>
+
+<div class="row">
+<div class="col">
+  <h2>Quantifying explanation interpretability</h2>
+  We measure interpretability via a user study to validate that humans can indeed interpret coherent stimuli along the visualized basis vectors. We presented users with two visualizations of each PC/neuron. One visualization was randomly shuffled while the other was in the correct order. Participants were instructed to select the visualization that displayed a coherent transition from left to right. If participants cannot accurately determine which one is random, then they cannot interpret the stimulus dimension; the continuity of the visualization is its defining feature. PC visualizations were, on average, more interpretable than Neuron visualizations for each layer in AlexNet with the most pronounced differences seen in layers <em>conv2</em>, <em>fc1</em>, and <em>fc2</em>.
+  <!-- <div style="display:flex; justify-content:center"> -->
+  <div>
+    <img src="img/user_study_nnn_tmlr_summary.pdf" style="width: 50%; display: block; margin: auto;">
+    <figcaption>User study accuracy for each AlexNet layer. Shaded regions indicate the standard error across 22 study participants.</figcaption>
+  </div>
+
+ 
+  <h2>Quantifying explanation completeness</h2>
+  <p>Explanation completeness is an abstract concept that could be measured in a variety of ways. We use two complementary measures of subspace completeness below.</p>
+
+  <p>One measure of completeness is the fraction of activation variance explained by a set of basis vectors. Below, we plot the cumulative explained variance ratio of the top-k basis vectors. Much of the activation variance is concentrated in the most important PCs (blue line) whereas explained variance is far less concentrated in the neuron basis (orange line). For example, to explain 80% of the activation variance for <em>fc1</em>, one could either study the first 42 PCs, or the 2782 highest variance neurons.</p>
+  <div style="margin-bottom: 32px">
+    <img src="img/explained_variance.pdf" width="100%" height="auto">
+    <figcaption>
+      Cumulative sum of explained variance ratio for each AlexNet layer plotted against the number of basis vectors being used. Both PCs and neurons are ordered by descending variance. The number of basis vectors required to explain 80% and 99% variance is annotated.
+    </figcaption>
+  </div>
+
+  <p>Another measure of completeness is to cumulatively ablate basis vectors and observe how much accuracy degrades. Basis vectors more important for a network's function should degrade accuracy rapidly compared to less important basis vectors. For most layers in AlexNet, ablating the highest variance PCs (solid blue line) damages accuracy more than ablating the highest variance neurons (solid orange line).</p>
+  <div>
+    <img src="img/ablation.pdf" width="100%" height="auto">
+    <figcaption>For each AlexNet layer, we ablate basis vectors in activation space and measure the effect on ImageNet top-1 validation accuracy. Both PCs and neurons are ordered by their explained variance. Reverse order corresponds to ascending explained variance.</figcaption>
+  </div>
+  
+</div><!-- col -->
+</div><!-- row -->
+
+
+
+<h2>How to cite</h2>
+
+<div class="card">
+<h3 class="card-header">Citation</h3>
+<div class="card-block">
+<div class="card-text clickselect">
+<p style="text-indent: -3em; margin-left: 3em;">
+Nolan Dey, Eric Taylor, Alexander Wong, Bryan Tripp, Graham Taylor. <em>Neuron-based explanations of neural networks sacrifice completeness and interpretability.</em> Transactions on Machine Learning Research, 2025.
+</p>
+</div>
+</div>
+</div>
+</p>
+
+<p>
+<div class="card">
+<h3 class="card-header">Bibtex</h3>
+<div class="card-block">
+<pre class="card-text clickselect">
+@article{dey2025neurons,
+  author = {Dey, Nolan and Taylor, Eric and Wong, Alexander and Tripp, Bryan and Taylor, Graham},
+  title = {Neuron-based explanations of neural networks sacrifice completeness and interpretability},
+  year = {2025},
+  journal = {Transactions on Machine Learning Research}
+}
+</pre>
+</div>
+</div>
+</p>
+
+<div class="row">
+  <div class="col">
+  <h2></h2>
+  <p><strong>Acknowledgments</strong>: Thank you BMO Bank of Montreal for funding this research. Thank you Thomas Fortin for helping to run
+experiments with ResNet and ViT.
+  </p>
+  </div> <!-- row -->
+</div> <!-- row -->
+</div> <!-- container -->
+
+<footer class="nd-pagefooter"></footer>
+
+</body>
+</html>
