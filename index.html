@@ -26,7 +26,7 @@
  <nobr>neural networks sacrifice</nobr>
  <nobr>completeness and</nobr>
  <nobr>interpretability</nobr>
-<address>
+<address style="margin-top: 24px; margin-bottom: 0px">
   <nobr><a target="_blank" href="https://ndey96.github.io"
   >Nolan Dey</a><sup>1,2,3</sup>,</nobr>
   <nobr><a target="_blank" href="https://scholar.google.ca/citations?user=OqtTvI0AAAAJ&hl=en"
@@ -53,8 +53,8 @@
 <div class="row">
   <div class="col text-center">
     <p>
-      [<a href="TODO" target="_blank">TMLR Paper</a>]
-      [<a href="TODO" target="_blank">arXiv Paper</a>]
+      <!-- [<a href="TODO" target="_blank">TMLR Paper</a>] -->
+      <!-- [<a href="TODO" target="_blank">arXiv Paper</a>] -->
       [<a href="https://openreview.net/forum?id=UWNa9Pv6qA" target="_blank">OpenReview</a>]
       [<a href="https://github.com/ndey96/neuron-explanations-sacrifice" target="_blank">Code</a>]
     </p>
@@ -80,9 +80,9 @@
   <p>Using the interface below, you can interpret visualizations of the following:</p>
   <ul>
     <li>PCs and neurons for every layer of pre-trained AlexNet.</li>
-    <li>PCs for every residual block of pre-trained ResNet-18</li>
-    <li>PCs for every residual block of pre-trained ResNet-50 \citep{resnet}.</li>
-    <li>PCs for 10 layers of pre-trained ViT-B/16</li>
+    <li>PCs for every residual block of pre-trained ResNet-18.</li>
+    <li>PCs for every residual block of pre-trained ResNet-50.</li>
+    <li>PCs for 10 layers of pre-trained ViT-B/16.</li>
   </ul>
 
   <div style="margin-bottom: 16px;">
@@ -281,7 +281,7 @@
   We measure interpretability via a user study to validate that humans can indeed interpret coherent stimuli along the visualized basis vectors. We presented users with two visualizations of each PC/neuron. One visualization was randomly shuffled while the other was in the correct order. Participants were instructed to select the visualization that displayed a coherent transition from left to right. If participants cannot accurately determine which one is random, then they cannot interpret the stimulus dimension; the continuity of the visualization is its defining feature. PC visualizations were, on average, more interpretable than Neuron visualizations for each layer in AlexNet with the most pronounced differences seen in layers <em>conv2</em>, <em>fc1</em>, and <em>fc2</em>.
   <!-- <div style="display:flex; justify-content:center"> -->
   <div>
-    <img src="img/user_study_nnn_tmlr_summary.pdf" style="width: 50%; display: block; margin: auto;">
+    <img src="img/user_study_nnn_tmlr_summary.svg" style="width: 50%; display: block; margin: auto;">
     <figcaption>User study accuracy for each AlexNet layer. Shaded regions indicate the standard error across 22 study participants.</figcaption>
   </div>
 
@@ -291,7 +291,7 @@
 
   <p>One measure of completeness is the fraction of activation variance explained by a set of basis vectors. Below, we plot the cumulative explained variance ratio of the top-k basis vectors. Much of the activation variance is concentrated in the most important PCs (blue line) whereas explained variance is far less concentrated in the neuron basis (orange line). For example, to explain 80% of the activation variance for <em>fc1</em>, one could either study the first 42 PCs, or the 2782 highest variance neurons.</p>
   <div style="margin-bottom: 32px">
-    <img src="img/explained_variance.pdf" width="100%" height="auto">
+    <img src="img/explained_variance.svg" width="100%" height="auto">
     <figcaption>
       Cumulative sum of explained variance ratio for each AlexNet layer plotted against the number of basis vectors being used. Both PCs and neurons are ordered by descending variance. The number of basis vectors required to explain 80% and 99% variance is annotated.
     </figcaption>
@@ -299,7 +299,7 @@
 
   <p>Another measure of completeness is to cumulatively ablate basis vectors and observe how much accuracy degrades. Basis vectors more important for a network's function should degrade accuracy rapidly compared to less important basis vectors. For most layers in AlexNet, ablating the highest variance PCs (solid blue line) damages accuracy more than ablating the highest variance neurons (solid orange line).</p>
   <div>
-    <img src="img/ablation.pdf" width="100%" height="auto">
+    <img src="img/ablation.svg" width="100%" height="auto">
     <figcaption>For each AlexNet layer, we ablate basis vectors in activation space and measure the effect on ImageNet top-1 validation accuracy. Both PCs and neurons are ordered by their explained variance. Reverse order corresponds to ascending explained variance.</figcaption>
   </div>
   
@@ -341,8 +341,9 @@ Nolan Dey, Eric Taylor, Alexander Wong, Bryan Tripp, Graham Taylor. <em>Neuron-b
 <div class="row">
   <div class="col">
   <h2></h2>
-  <p><strong>Acknowledgments</strong>: Thank you BMO Bank of Montreal for funding this research. Thank you Thomas Fortin for helping to run
-experiments with ResNet and ViT.
+  <p>
+  <strong>Acknowledgments</strong>: 
+  This research was supported by funding from BMO Bank of Montreal through the the Waterloo Artificial Intelligence Institute (SRA #081648). The authors thank Thomas Fortin for helping to run experiments with ResNet and ViT. This research was supported, in part, by the Province of Ontario and the Government of Canada through the Canadian Institute for Advanced Research (CIFAR), and <a href="https://vectorinstitute.ai/partnerships/current-partners/">companies sponsoring</a> the Vector Institute. GWT is supported by the Natural Sciences and Engineering Research Council of Canada (NSERC), the Canada Research Chairs program, and the Canada CIFAR AI Chairs program. This research was conducted with approval from the University of Guelph Research Ethics Board (REB #20-12-003).
   </p>
   </div> <!-- row -->
 </div> <!-- row -->
